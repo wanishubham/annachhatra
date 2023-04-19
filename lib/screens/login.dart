@@ -132,6 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     TextButton(
                         onPressed: () async {
+
                           setState(() {
                             showSpinner = true;
                           });

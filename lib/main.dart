@@ -44,16 +44,7 @@ class MyApp extends StatelessWidget {
           }
         }
     );
-    // return MaterialApp(
-    //   debugShowCheckedModeBanner: false,
-    //   initialRoute: LoginScreen.id,
-    //     routes:{
-    //     // WelcomeScreen.id:(context) => WelcomeScreen(),
-    //       LoginScreen.id:(context) => LoginScreen(),
-    //  RegisterScreen.id:(context) => RegisterScreen(),
-    //       HomePage.id:(context) => HomePage(),
 
-  // home: LoginScreen(),
 
   }
 }

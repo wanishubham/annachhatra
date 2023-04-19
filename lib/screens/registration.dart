@@ -1,8 +1,14 @@
+//import 'dart:html';
+import 'dart:io';
+
 import 'package:annachhatra/pages/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String id = 'registration_screen';
@@ -12,14 +18,47 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  CollectionReference users  = FirebaseFirestore.instance.collection('users');
 
   final _auth = FirebaseAuth.instance;
   bool showSpinner = false;
-  late String hotel;
+  late String username;
   late String address;
   late String email;
   late String password;
   late String verify;
+  //String? profile;
+  late String imageUrl;
+
+ // late String fileName;
+
+  void pickUploadImage() async {
+    final image = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 75,
+
+    );
+    Reference ref = FirebaseStorage.instance.ref().child('demo.jpg');
+    UploadTask uploadTask = ref.putFile(File(image!.path));
+
+    uploadTask.whenComplete(()  async{
+
+      try{
+        imageUrl = await ref.getDownloadURL();
+
+      }catch(e){
+        print(e);
+      }
+      print(imageUrl);
+    });
+
+    //await
+    // ref.getDownloadURL().then((value) => print(value));
+    
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +111,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 )),
           ),
-          Flexible(
-            child: Container(
+          Flexible(child: GestureDetector(
+    onTap: (){
+      pickUploadImage();
+      print('image stored'+imageUrl.toString());
+
+    },
+
+          child:
+           Container(
               height: 136,
               width: 185,
               color: Colors.grey,
@@ -81,7 +127,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
               ),
             ),
-          ),
+          ),),
           SizedBox(height: 35.0),
           SingleChildScrollView(
               child: Container(
@@ -96,7 +142,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   keyboardType: TextInputType.text,
                   textAlign: TextAlign.start,
                   onChanged: (value) {
-                    hotel = value;
+                    username = value;
                   },
                   decoration:
                       InputDecoration(hintText: 'Organization / hotel name'),
@@ -150,6 +196,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 TextButton(
                   onPressed: () async{
+                    await users.add({'username': username,'profile': imageUrl.toString()}).then((value) => print('User added' ));
+
                     setState(() {
                       showSpinner = true;
                     });

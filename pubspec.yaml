@@ -21,6 +21,7 @@ dependencies:
   firebase_auth: ^4.4.0
   cloud_firestore: ^4.5.0
   firebase_storage: ^11.1.0
+  image_picker: ^0.8.7+2
   file_picker: ^5.2.6
   modal_progress_hud_nsn: ^0.3.0
   google_fonts: ^4.0.3

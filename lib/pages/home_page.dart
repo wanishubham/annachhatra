@@ -7,6 +7,7 @@ import 'package:annachhatra/pages/list.dart';
 import 'package:annachhatra/side_menu/side_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomePage extends StatefulWidget {
   static const String id = 'home_page';
@@ -15,13 +16,25 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  CollectionReference order  = FirebaseFirestore.instance.collection('order');
+  CollectionReference items  = FirebaseFirestore.instance.collection('items');
+  String? sender;
+  late bool veg = false;
+  bool? order_availability = false;
+  late String username;
+  // ignore: non_constant_identifier_names
+  String? dish_name;
+  int? quantity;
   late String textName = '';
+  late String textName1 = '';
   final textController = TextEditingController();
 
-  bool isChecked = true;
+  bool isChecked = false;
   @override
   Widget build(BuildContext context) {
     String text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Odio et convallis euismod';
+
+
 
     return Scaffold(
         drawer: NavDrawer(),
@@ -39,7 +52,8 @@ class _HomePageState extends State<HomePage> {
             ]),
             IconButton(
                 onPressed: () {
-                  bool IsCheck = false;
+                  //bool IsCheck;
+
                   showDialog(context: context, builder: (BuildContext context) => SingleChildScrollView(child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -67,13 +81,16 @@ class _HomePageState extends State<HomePage> {
                                  child: Text('Shubham wani',style: GoogleFonts.montserrat(
                                      textStyle: TextStyle(decoration:TextDecoration.none,fontWeight: FontWeight.w800,fontSize: 18,color: Color(0xFF646464)))),
                                ),
-
                               ],
                             ),/// Donation name
+
                             Row(children: [
+
                               Container(
+
                                 height: 36,
                                 width: 257.34,
+
                                 child: Text(text,style: GoogleFonts.montserrat(
                                     textStyle: TextStyle(fontWeight: FontWeight.w400,fontSize: 12,color: Color(0xFF646464),decoration:TextDecoration.none,))),
                               )
@@ -88,9 +105,12 @@ class _HomePageState extends State<HomePage> {
                                     Material(child:
                                 TextField(
                                   controller: textController ,
+
                                   keyboardType: TextInputType.text,
                                   textAlign: TextAlign.start,
-                                  onChanged: (textName){
+                                  onChanged: (newValue){
+                                    dish_name = newValue;
+                                    print('dish added'+dish_name.toString());
 
                                   },
                                   decoration: const InputDecoration(hintText: 'Enter dish name'),
@@ -107,6 +127,8 @@ class _HomePageState extends State<HomePage> {
                                       keyboardType: TextInputType.number,
                                       textAlign: TextAlign.start,
                                       onChanged: (value){
+                                        quantity = int.parse(value);
+                                        print('quantity added'+quantity.toString());
 
                                       },
                                       decoration: InputDecoration(hintText: 'Quantity'),
@@ -124,8 +146,12 @@ class _HomePageState extends State<HomePage> {
                                   child: TextButton(
                                     onPressed: (){
                                       setState(() {
+
                                         textName = textController.text;
+                                        textName1 = textController.text;
+
                                       });
+
                                     },style: TextButton.styleFrom(shape: StadiumBorder(),backgroundColor: Colors.white),
                                     child: Text('Add'),
                                   ),
@@ -160,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                                   width: 30,
                                   color: Colors.transparent,
                                   child: Material(child:
-                                  IconButton(onPressed: () {  }, icon: Image.asset('images/delete.png'),
+                                  IconButton(onPressed: () { }, icon: Image.asset('images/delete.png'),
                                     
                                   )
                                 ),),
@@ -168,7 +194,7 @@ class _HomePageState extends State<HomePage> {
                                 Container(
                                   height: 15,
                                   width: 150,
-                                  child: Text(textName,style: GoogleFonts.montserrat(textStyle: TextStyle(decoration:TextDecoration.none,color: Color(0xFF519259),fontSize: 12,fontWeight: FontWeight.w400)),),
+                                  child: Text('Paneer masala',style: GoogleFonts.montserrat(textStyle: TextStyle(decoration:TextDecoration.none,color: Color(0xFF519259),fontSize: 12,fontWeight: FontWeight.w400)),),
                                 ),
                                 SizedBox(width: 10,),
                                 Container(
@@ -208,25 +234,59 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ],
                             ),/// dish name and quantity
-                            SizedBox(height: 15,),
+                            SizedBox(height: 0,),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Container(
-                                  height:30 ,
-                                  width: 30,
-                                  child: Material(
-                                    child: Checkbox(
-                                      value: IsCheck,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          IsCheck = value!;
-                                        });
-                                      },
+                                Material(child:Checkbox(value: veg, activeColor: Colors.blueAccent,
+                                    onChanged: ( value){
+                                  setState(() {
+                                    veg = value!;
+                                    if(veg != false){
+                                     // veg == true;
+                                      print('true' + veg.toString());
+                                    }else{
+                                      //veg == false;
+                                      print('false' + veg.toString());
+                                    }
 
-                                    ),
-                                  ),
-                                ),
+                                  });
+                                })),
+                                // Container(
+                                //   height:30 ,
+                                //   width: 30,
+                                //   child: Material(
+                                //     child: Checkbox(
+                                //       //activeColor: Colors.blueAccent ,
+                                //       value: veg,
+                                //       onChanged: (bool? value) {
+                                //         setState(() {
+                                //           //IsCheck = value!;
+                                //           //  veg == value!;
+                                //
+                                //           if(veg == false){
+                                //
+                                //            // print('false');
+                                //             veg == value!;
+                                //             print('true');
+                                //           }else{
+                                //             veg == value!;
+                                //             print('false');
+                                //           }
+                                //           // if(veg == false){
+                                //           //   print('addedTrue' + veg.toString());
+                                //           // }else{
+                                //           //   print('addedFalse'+ veg.toString());
+                                //           // }
+                                //          // veg = IsCheck;
+                                //
+                                //         });
+                                //
+                                //       },
+                                //
+                                //     ),
+                                //   ),
+                                // ),
                                 SizedBox(width:16 ,),
                                 Container(
                                   width: 190,
@@ -238,8 +298,7 @@ class _HomePageState extends State<HomePage> {
 
                               ],
                             ), /// check Veg & non-Veg
-                            SizedBox(height: 33,),
-                            Column(
+                            SizedBox(height: 33,),                            Column(
                               children: [
                                 Container(
                                   width: 104,
@@ -247,7 +306,9 @@ class _HomePageState extends State<HomePage> {
                                   decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.grey,blurRadius: 5,offset: Offset(0.0,1))],
                                   borderRadius: BorderRadius.circular(22)),
                                   child: TextButton(
-                                    onPressed: (){
+                                    onPressed: ()async{
+                                      await items.add({'dish_name':dish_name.toString(),'quantity': quantity.toString()}).then((value) => print('User added'));
+                                     // await order.add({'veg':veg.toString()}).then((value) => print('selected'));
                                       Navigator.pop(context);
                                     },style: TextButton.styleFrom(shape: StadiumBorder(),backgroundColor: Color(0xFFF0BB62)),
                                     child: Text('Donate',textAlign: TextAlign.center,style: GoogleFonts.montserrat(textStyle: TextStyle(fontWeight: FontWeight.w700,
@@ -256,11 +317,6 @@ class _HomePageState extends State<HomePage> {
                                 )
                               ],
                             ) /// Donate Button
-
-
-
-
-
                         ],),
                       )
 
@@ -610,6 +666,15 @@ class _HomePageState extends State<HomePage> {
                                                                         onChanged: (value){
                                                                           setState(() {
                                                                             isChecked = value!;
+                                                                            if(isChecked != false){
+                                                                              print('true' + order_availability
+                                                                                  .toString());
+
+                                                                            }else{
+                                                                              print('false' + order_availability
+                                                                                  .toString());
+                                                                            }
+
                                                                           });
                                                                         },)
 
@@ -638,7 +703,8 @@ class _HomePageState extends State<HomePage> {
                                                                         height: 29,
                                                                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(30),boxShadow: [BoxShadow(color: Colors.grey,blurRadius: 4,offset: Offset(0.0,1))]),
                                                                         child: TextButton(
-                                                                          onPressed: (){
+                                                                          onPressed: () async{
+                                                                            await order.add({'sender': n[index].toString(),'order_availability': order_availability.toString(),'veg':veg.toString()}).then((value) => print('order added' ));
                                                                             showDialog(context: context, builder: (context) => SingleChildScrollView(child:Container( child: Column(
                                                                                 mainAxisAlignment:
                                                                                 MainAxisAlignment
